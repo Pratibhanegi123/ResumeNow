@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resume Builder</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+            margin: 0;
+            padding: 2rem;
+            display: flex;
+            justify-content: center;
+        }
+
+        #threejs-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            opacity: 0.5;
+        }
+
+        .container {
+            max-width: 900px;
+            width: 100%;
+            background-color: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            position: relative;
+            z-index: 10;
+        }
+
+        .form-section {
+            border-bottom: 1px solid #e5e7eb;
+            padding: 1.5rem;
+        }
+
+        .form-section:last-of-type {
+            border-bottom: none;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="tel"],
+        input[type="url"],
+        textarea {
+            width: 100%;
+            padding: 0.75rem;
+            margin-top: 0.5rem;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            box-sizing: border-box;
+            font-size: 0.875rem;
+            transition: border-color 0.2s;
+        }
+
+        input[type="text"]:focus,
+        input[type="email"]:focus,
+        input[type="tel"]:focus,
+        input[type="url"]:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #3b82f6;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 6px;
+            font-weight: 600;
+            transition: background-color 0.2s;
+            cursor: pointer;
+        }
+
+        .btn-add {
+            background-color: #2563eb;
+            color: white;
+        }
+
+        .btn-add:hover {
+            background-color: #1d4ed8;
+        }
+
+        .btn-primary {
+            background-color: #10b981;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #059669;
+        }
+
+        .btn-download {
+            background-color: #f59e0b;
+            color: white;
+        }
+
+        .btn-download:hover {
+            background-color: #d97706;
+        }
+
+        .resume-page {
+            display: none;
+            height: 100%;
+        }
+
+        .resume-section-title {
+            position: relative;
+            padding-left: 20px;
+            font-size: 1.125rem;
+            font-weight: 700;
+            color: #374151;
+            margin-bottom: 1rem;
+        }
+
+        .resume-section-title::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 10px;
+            height: 10px;
+            background-color: #10b981;
+            border-radius: 50%;
+        }
+
+        .resume-bullet {
+            list-style-type: none;
+            position: relative;
+            padding-left: 1.5rem;
+        }
+
+        .resume-bullet::before {
+            content: '▶';
+            color: #10b981;
+            position: absolute;
+            left: 0;
+            font-size: 0.75rem;
+            top: 0.25rem;
+        }
+
+        @media print {
+            body {
+                background-color: #fff !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            .container {
+                max-width: 100% !important;
+                width: 210mm !important;
+                height: 297mm !important;
+                border-radius: 0 !important;
+                box-shadow: none !important;
+                padding: 0;
+                margin: 0;
+            }
+            #formContainer {
+                display: none !important;
+            }
+            #resumePage {
+                display: block !important;
+            }
+            #backToFormBtn, #downloadPdfBtn {
+                display: none !important;
+            }
+            .resume-page {
+                padding: 20mm !important;
+            }
+        }
+    </style>
+
+      <script>
+    function printDiv(divId) {
+      // Get the div content
+      var content = document.getElementById(divId).innerHTML;
+      
+      // Open a new window
+      var printWindow = window.open('', '', 'height=600,width=800');
+      
+      // Write the content to the new window
+      printWindow.document.write('<html><head><title>Print</title></head><body>');
+      printWindow.document.write(content);
+      printWindow.document.write('</body></html>');
+      
+      // Close the document and trigger print
+      printWindow.document.close();
+      printWindow.print();
+    }
+  </script>
+</head>
+<body class="bg-gray-100 flex justify-center p-8">
+    <canvas id="threejs-canvas"></canvas>
+
+    <div id="formContainer" class="container">
+        <div class="relative">
+            <h1 class="text-3xl font-bold text-center my-6 text-gray-800">Resume Builder</h1>
+        </div>
+        <form id="resumeForm" class="p-6">
+            <div class="form-section">
+                <h2 class="text-xl font-semibold mb-4 text-gray-700">Personal Information</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label for="name" class="block font-medium text-gray-700">Full Name</label>
+                        <input type="text" id="name" name="name" placeholder="Melissa Ware">
+                    </div>
+                    <div>
+                        <label for="headline" class="block font-medium text-gray-700">Professional Headline</label>
+                        <input type="text" id="headline" name="headline" placeholder="Copywriter">
+                    </div>
+                    <div>
+                        <label for="email" class="block font-medium text-gray-700">Email</label>
+                        <input type="email" id="email" name="email" placeholder="melissa@novoresume.com">
+                    </div>
+                    
+                    <div style="display: flex; flex-direction: column; gap: 4px; max-width: 300px;">
+                    <label for="phone" style="font-weight: 500;">Phone Number</label>
+                    <div style="display: flex; gap: 8px;">
+                        <select name="countryCode" id="countryCode" style="padding: 6px; border-radius: 4px; border: 1px solid #ccc;">
+                        <option value="+1">US +1</option>
+                        <option value="+91">IN +91</option>
+                        <option value="+82">KR +82</option>
+                        <option value="+61">AU +61</option>
+                        <option value="+81">JP +81</option>
+                        <option value="+93">AF +93</option>
+                        <option value="+880">BGD +880</option>
+                        <option value="+86">CHN +86</option>
+                        <option value="+20">EGY +20</option>
+                        <option value="+49">DEU +49</option>
+                        <option value="+852">HK +852</option>
+                        <option value="+354">ISL +354</option>
+                        <option value="+62">IDN +62</option>
+                        <option value="+7">RUS +7</option>
+                        <option value="+30">GRC +30</option>
+                        </select>
+
+                        <input type="tel" id="phone" name="phone" placeholder="123 4444 5555" 
+                            style="flex: 1; padding: 6px; border-radius: 4px; border: 1px solid #ccc;">
+                    </div>
+                    </div>
+
+
+                    <div>
+                        <label for="location" class="block font-medium text-gray-700">Location</label>
+                        <input type="text" id="location" name="location" placeholder="Columbus, Ohio">
+                    </div>
+                    <div>
+                        <label for="linkedin" class="block font-medium text-gray-700">LinkedIn URL</label>
+                        <input type="url" id="linkedin" name="linkedin" placeholder="linkedin.com/in/melissaware">
+                    </div>
+                    <div>
+                        <label for="twitter" class="block font-medium text-gray-700">Twitter URL</label>
+                        <input type="url" id="twitter" name="twitter" placeholder="twitter.com/@melissa.w">
+                    </div>
+                    <div>
+                        <label for="medium" class="block font-medium text-gray-700">Medium URL</label>
+                        <input type="url" id="medium" name="medium" placeholder="medium.com/@melissa.ware">
+                    </div>
+                </div>
+                <label for="summary" class="block font-medium text-gray-700 mt-4">Professional Summary</label>
+                <textarea id="summary" name="summary" rows="4" placeholder="Passionate and creative Copywriter with 5+ years of writing experience..."></textarea>
+            </div>
+
+            <div class="form-section">
+                <h2 class="text-xl font-semibold mb-4 text-gray-700">Work Experience</h2>
+                <div id="experience-container" class="space-y-6">
+                    <div class="experience-entry p-4 border rounded-md">
+                        <label class="block font-medium text-gray-700">Job Title</label>
+                        <input type="text" name="job-title[]" placeholder="Lead Copywriter">
+
+                        <label class="block font-medium text-gray-700 mt-2">Company</label>
+                        <input type="text" name="company[]" placeholder="Burton Agency">
+
+                        <label class="block font-medium text-gray-700 mt-2">Dates</label>
+                        <input type="text" name="dates[]" placeholder="01/2022 - Present">
+
+                        <label class="block font-medium text-gray-700 mt-2">Achievements (one per line)</label>
+                        <textarea name="achievements[]" rows="4" placeholder="Consistently wrote a minimum of 7 Facebook and Instagram posts per week."></textarea>
+                    </div>
+                </div>
+                <button type="button" id="add-experience" class="btn btn-add mt-4">Add Another Experience</button>
+            </div>
+
+            <div class="form-section">
+                <h2 class="text-xl font-semibold mb-4 text-gray-700">Education</h2>
+                <div id="education-container" class="space-y-6">
+                    <div class="education-entry p-4 border rounded-md">
+                        <label class="block font-medium text-gray-700">Degree</label>
+                        <input type="text" name="degree[]" placeholder="BA in Journalism">
+
+                        <label class="block font-medium text-gray-700 mt-2">University</label>
+                        <input type="text" name="university[]" placeholder="The Ohio State University">
+
+                        <label class="block font-medium text-gray-700 mt-2">Dates</label>
+                        <input type="text" name="edu-dates[]" placeholder="08/2014 - 06/2018">
+                    </div>
+                </div>
+                <button type="button" id="add-education" class="btn btn-add mt-4">Add Another Education</button>
+            </div>
+
+            <div class="form-section">
+                <h2 class="text-xl font-semibold mb-4 text-gray-700">Skills</h2>
+                <div id="skills-container" class="space-y-2">
+                    <div class="skill-entry flex items-center space-x-2">
+                        <input type="text" name="skills[]" placeholder="Copywriting" class="flex-1">
+                    </div>
+                </div>
+                <button type="button" id="add-skill" class="btn btn-add mt-4">Add Another Skill</button>
+            </div>
+
+            <div class="form-section">
+                <h2 class="text-xl font-semibold mb-4 text-gray-700">Personal Projects</h2>
+                <div id="projects-container" class="space-y-6">
+                    <div class="project-entry p-4 border rounded-md">
+                        <label class="block font-medium text-gray-700">Project Title</label>
+                        <input type="text" name="project-title[]" placeholder="Fiction Writing">
+
+                        <label class="block font-medium text-gray-700 mt-2">Dates</label>
+                        <input type="text" name="project-dates[]" placeholder="2017 - Present">
+                        
+                        <label class="block font-medium text-gray-700 mt-2">Description (one per line)</label>
+                        <textarea name="project-desc[]" rows="4" placeholder="Compose fiction or nonfiction prose, such as short stories, novels, articles..."></textarea>
+                    </div>
+                </div>
+                <button type="button" id="add-project" class="btn btn-add mt-4">Add Another Project</button>
+            </div>
+
+            <div class="form-section">
+                <h2 class="text-xl font-semibold mb-4 text-gray-700">Languages</h2>
+                <div id="languages-container" class="space-y-6">
+                    <div class="language-entry p-4 border rounded-md">
+                        <label class="block font-medium text-gray-700">Language</label>
+                        <input type="text" name="language[]" placeholder="English">
+                        
+                        <label class="block font-medium text-gray-700 mt-2">Proficiency</label>
+                        <input type="text" name="proficiency[]" placeholder="Native/Bilingual Proficiency">
+                    </div>
+                </div>
+                <button type="button" id="add-language" class="btn btn-add mt-4">Add Another Language</button>
+            </div>
+
+            <button type="submit" class="btn btn-primary w-full mt-6">Generate Resume</button>
+        </form>
+    </div>
+
+    <div id="resumePage" class="resume-page container p-8">
+        <div class="grid grid-cols-3 gap-6">
+            <div class="col-span-2">
+                <div id="resume-name" class="text-4xl font-extrabold text-gray-900"></div>
+                <div id="resume-headline" class="text-xl text-gray-600 mb-4"></div>
+                <div id="resume-summary" class="text-gray-600 text-sm leading-relaxed mb-6"></div>
+
+                <div class="space-y-8">
+                    <div class="relative">
+                        <div class="resume-section-title">WORK EXPERIENCE</div>
+                        <div id="resume-experience-list" class="space-y-4"></div>
+                    </div>
+
+                    <div class="relative">
+                        <div class="resume-section-title">EDUCATION</div>
+                        <div id="resume-education-list" class="space-y-4"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-span-1 bg-gray-50 p-6 rounded-lg">
+                <div id="resume-contact-list" class="text-gray-600 text-sm mb-6"></div>
+
+                <div class="space-y-6">
+                    <div>
+                        <div class="resume-section-title">GENERAL SKILLS</div>
+                        <div id="resume-skills-list" class="grid grid-cols-2 gap-2 text-sm text-gray-600"></div>
+                    </div>
+
+                    <div>
+                        <div class="resume-section-title">PERSONAL PROJECTS</div>
+                        <div id="resume-projects-list" class="space-y-4"></div>
+                    </div>
+
+                    <div>
+                        <div class="resume-section-title">LANGUAGES</div>
+                        <div id="resume-languages-list" class="space-y-4"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="flex justify-between w-full mt-6 space-x-4">
+            <button id="backToFormBtn" class="btn btn-add w-1/2">Edit Resume</button>
+            <button onclick="printDiv('resumePage')" class="btn btn-download w-1/2">Print/Download as PDF</button>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+    <script>
+        
+        // <---- Automated Color Change Functionality ------>
+        const getRandomColor = () => {
+            const letters = '0123456789ABCDEF';
+            let color = '#';
+            for (let i = 0; i < 6; i++) {
+                color += letters[Math.floor(Math.random() * 16)];
+            }
+            return color;
+        };
+
+        const updateFormColors = () => {
+            const newColor = getRandomColor();
+            const formButtons = document.querySelectorAll('.btn-add, .btn-primary, .btn-download');
+            const resumeAccents = document.querySelectorAll('.resume-section-title::before');
+            const resumeBullets = document.querySelectorAll('.resume-bullet::before');
+
+            formButtons.forEach(button => {
+                button.style.backgroundColor = newColor;
+            });
+            resumeAccents.forEach(accent => {
+                accent.style.backgroundColor = newColor;
+            });
+            resumeBullets.forEach(bullet => {
+                bullet.style.color = newColor;
+            });
+        };
+
+        setInterval(updateFormColors, 5000);
+
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const formContainer = document.getElementById('formContainer');
+            const resumePage = document.getElementById('resumePage');
+            const resumeForm = document.getElementById('resumeForm');
+            const backToFormBtn = document.getElementById('backToFormBtn');
+            const downloadPdfBtn = document.getElementById('downloadPdfBtn'); // Added Download button element
+            
+
+            const addExperienceBtn = document.getElementById('add-experience');
+            const experienceContainer = document.getElementById('experience-container');
+            const addEducationBtn = document.getElementById('add-education');
+            const educationContainer = document.getElementById('education-container');
+            const addSkillBtn = document.getElementById('add-skill');
+            const skillsContainer = document.getElementById('skills-container');
+            const addProjectBtn = document.getElementById('add-project');
+            const projectsContainer = document.getElementById('projects-container');
+            const addLanguageBtn = document.getElementById('add-language');
+            const languagesContainer = document.getElementById('languages-container');
+
+            const addDynamicSection = (container, templateHTML) => {
+                const newEntry = document.createElement('div');
+                newEntry.innerHTML = templateHTML;
+                container.appendChild(newEntry.firstElementChild);
+            };
+
+            addExperienceBtn.addEventListener('click', () => {
+                const template = `
+                    <div class="experience-entry p-4 border rounded-md mt-4">
+                        <label class="block font-medium text-gray-700">Job Title</label>
+                        <input type="text" name="job-title[]">
+                        <label class="block font-medium text-gray-700 mt-2">Company</label>
+                        <input type="text" name="company[]">
+                        <label class="block font-medium text-gray-700 mt-2">Dates</label>
+                        <input type="text" name="dates[]">
+                        <label class="block font-medium text-gray-700 mt-2">Achievements (one per line)</label>
+                        <textarea name="achievements[]" rows="4"></textarea>
+                    </div>
+                `;
+                addDynamicSection(experienceContainer, template);
+            });
+
+            addEducationBtn.addEventListener('click', () => {
+                const template = `
+                    <div class="education-entry p-4 border rounded-md mt-4">
+                        <label class="block font-medium text-gray-700">Degree</label>
+                        <input type="text" name="degree[]">
+                        <label class="block font-medium text-gray-700 mt-2">University</label>
+                        <input type="text" name="university[]">
+                        <label class="block font-medium text-gray-700 mt-2">Dates</label>
+                        <input type="text" name="edu-dates[]">
+                    </div>
+                `;
+                addDynamicSection(educationContainer, template);
+            });
+
+            addSkillBtn.addEventListener('click', () => {
+                const template = `
+                    <div class="skill-entry flex items-center space-x-2 mt-2">
+                        <input type="text" name="skills[]" class="flex-1">
+                    </div>
+                `;
+                addDynamicSection(skillsContainer, template);
+            });
+
+            addProjectBtn.addEventListener('click', () => {
+                const template = `
+                    <div class="project-entry p-4 border rounded-md mt-4">
+                        <label class="block font-medium text-gray-700">Project Title</label>
+                        <input type="text" name="project-title[]">
+                        <label class="block font-medium text-gray-700 mt-2">Dates</label>
+                        <input type="text" name="project-dates[]">
+                        
+                        <label class="block font-medium text-gray-700 mt-2">Description (one per line)</label>
+                        <textarea name="project-desc[]" rows="4"></textarea>
+                    </div>
+                `;
+                addDynamicSection(projectsContainer, template);
+            });
+
+            addLanguageBtn.addEventListener('click', () => {
+                const template = `
+                    <div class="language-entry p-4 border rounded-md mt-4">
+                        <label class="block font-medium text-gray-700">Language</label>
+                        <input type="text" name="language[]">
+                        
+                        <label class="block font-medium text-gray-700 mt-2">Proficiency</label>
+                        <input type="text" name="proficiency[]">
+                    </div>
+                `;
+                addDynamicSection(languagesContainer, template);
+            });
+            
+            resumeForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const formData = new FormData(resumeForm);
+                const data = {};
+
+                const getAll = (name) => {
+                    return formData.getAll(name).filter(val => val.trim() !== '');
+                };
+
+                document.getElementById('resume-name').textContent = formData.get('name') || 'Your Name';
+                document.getElementById('resume-headline').textContent = formData.get('headline') || 'Your Headline';
+                document.getElementById('resume-summary').textContent = formData.get('summary') || '';
+                
+                const contactList = document.getElementById('resume-contact-list');
+                contactList.innerHTML = '';
+                const email = formData.get('email');
+                if (email) { contactList.innerHTML += `<div class="flex items-center space-x-2 mb-1"><i class="fas fa-envelope text-gray-500"></i><span>${email}</span></div>`; }
+                const phone = formData.get('phone');
+                if (phone) { contactList.innerHTML += `<div class="flex items-center space-x-2 mb-1"><i class="fas fa-phone text-gray-500"></i><span>${phone}</span></div>`; }
+                const location = formData.get('location');
+                if (location) { contactList.innerHTML += `<div class="flex items-center space-x-2 mb-1"><i class="fas fa-map-marker-alt text-gray-500"></i><span>${location}</span></div>`; }
+                const linkedin = formData.get('linkedin');
+                if (linkedin) { contactList.innerHTML += `<div class="flex items-center space-x-2 mb-1"><i class="fab fa-linkedin text-gray-500"></i><a href="${linkedin}" class="hover:underline">${linkedin}</a></div>`; }
+                const twitter = formData.get('twitter');
+                if (twitter) { contactList.innerHTML += `<div class="flex items-center space-x-2 mb-1"><i class="fab fa-twitter text-gray-500"></i><a href="${twitter}" class="hover:underline">${twitter}</a></div>`; }
+                const medium = formData.get('medium');
+                if (medium) { contactList.innerHTML += `<div class="flex items-center space-x-2 mb-1"><i class="fab fa-medium text-gray-500"></i><a href="${medium}" class="hover:underline">${medium}</a></div>`; }
+
+                const experienceList = document.getElementById('resume-experience-list');
+                experienceList.innerHTML = '';
+                const jobTitles = getAll('job-title[]');
+                const companies = getAll('company[]');
+                const dates = getAll('dates[]');
+                const achievements = getAll('achievements[]');
+                for (let i = 0; i < jobTitles.length; i++) {
+                    const achievementList = achievements[i] ? achievements[i].split('\n').map(item => `<li class="resume-bullet text-gray-600 text-sm">${item.trim()}</li>`).join('') : '';
+                    experienceList.innerHTML += `
+                        <div>
+                            <div class="font-semibold text-base">${jobTitles[i]}</div>
+                            <div class="text-sm text-gray-500">${companies[i]} / ${dates[i]}</div>
+                            <ul class="mt-2 space-y-1">${achievementList}</ul>
+                        </div>
+                    `;
+                }
+
+                const educationList = document.getElementById('resume-education-list');
+                educationList.innerHTML = '';
+                const degrees = getAll('degree[]');
+                const universities = getAll('university[]');
+                const eduDates = getAll('edu-dates[]');
+                for (let i = 0; i < degrees.length; i++) {
+                    educationList.innerHTML += `
+                        <div>
+                            <div class="font-semibold text-base">${degrees[i]}</div>
+                            <div class="text-sm text-gray-500">${universities[i]}</div>
+                            <div class="text-sm text-gray-500">${eduDates[i]}</div>
+                        </div>
+                    `;
+                }
+                
+                const skillsList = document.getElementById('resume-skills-list');
+                skillsList.innerHTML = '';
+                const skills = getAll('skills[]');
+                skills.forEach(skill => {
+                    skillsList.innerHTML += `<div class="text-gray-600">${skill}</div>`;
+                });
+
+                const projectsList = document.getElementById('resume-projects-list');
+                projectsList.innerHTML = '';
+                const projectTitles = getAll('project-title[]');
+                const projectDates = getAll('project-dates[]');
+                const projectDesc = getAll('project-desc[]');
+                for (let i = 0; i < projectTitles.length; i++) {
+                    const descList = projectDesc[i] ? projectDesc[i].split('\n').map(item => `<li class="resume-bullet text-gray-600 text-sm">${item.trim()}</li>`).join('') : '';
+                    projectsList.innerHTML += `
+                        <div>
+                            <div class="font-semibold text-base">${projectTitles[i]} <span class="text-sm text-gray-500">(${projectDates[i]})</span></div>
+                            <ul class="mt-2 space-y-1">${descList}</ul>
+                        </div>
+                    `;
+                }
+
+                const languagesList = document.getElementById('resume-languages-list');
+                languagesList.innerHTML = '';
+                const languages = getAll('language[]');
+                const proficiencies = getAll('proficiency[]');
+                for (let i = 0; i < languages.length; i++) {
+                    languagesList.innerHTML += `
+                        <div>
+                            <div class="font-semibold text-base">${languages[i]}</div>
+                            <div class="text-sm text-gray-500">${proficiencies[i]}</div>
+                        </div>
+                    `;
+                }
+
+                formContainer.style.display = 'none';
+                resumePage.style.display = 'block';
+            });
+            
+            backToFormBtn.addEventListener('click', () => {
+                formContainer.style.display = 'block';
+                resumePage.style.display = 'none';
+            });
+
+            // Added functionality for the download button
+            downloadPdfBtn.addEventListener('click', () => {
+                window.print();
+            });
+        });
+    </script>
+</body>
+</html>

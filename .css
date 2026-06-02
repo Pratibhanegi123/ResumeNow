@@ -1,0 +1,354 @@
+/*=============job=======*/
+
+    body { font-family: Arial; }
+    .filter-box {
+        width: 320px;
+        padding: 15px;
+        border: 1px solid #ccc;
+        border-radius: 10px;
+    }
+    select, button {
+        width: 100%;
+        padding: 8px;
+        margin-top: 10px;
+    }
+    .job-list {
+        margin-top: 20px;
+        padding: 10px;
+        background: #f5f5f5;
+        border-radius: 8px;
+    }
+/*==========NAVBAR=============*/
+
+.navbar{
+    background-color: rgb(225, 228, 221);
+    
+}
+
+.dark-mode {
+  background-color: #121212;
+  color: #f5f5f5;
+}
+
+.dark-mode .navbar {
+  background-color: #1f1f1f !important;
+}
+
+.dark-mode .nav-link,
+.dark-mode .navbar-brand {
+  color: #f5f5f5 !important;
+}
+
+.dark-mode .btn-outline-secondary {
+  border-color: #ccc;
+  color: #ccc;
+}
+
+
+/*==========HEADER=============*/
+
+header h1, 
+header h2, 
+header h3, 
+header h4, 
+header h5, 
+header h6 {
+text-align: center;
+font-family: "Oswald"
+}
+
+header .w3-display-left {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  width: 100%; /* so text stays centered */
+}
+header {
+  position: relative;
+  height: 100vh; /* or any desired height */
+  margin: 0;
+  padding: 0;
+}
+
+header img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* keeps image filling header */
+  display: block;
+}
+
+
+
+/*===============VIDEO  header=================*/
+
+.col1 {
+    font-size: 40px; 
+    line-height: 1.6;     
+    font-weight: bold;
+    transition: transform 0.3s, color 0.3s;
+    
+  }
+
+  .col2 {
+    font-size: 18px;      /* smaller font */
+    line-height: 1.6;
+    transition: transform 0.3s, color 0.3s;
+    margin-left: 1.6rem;
+  }
+
+  /* Hover effects */
+  .col1:hover {
+    transform: scale(1.05);
+    color: darkblue;
+  }
+
+  .col2:hover {
+    transform: scale(1.02);
+    color: darkgreen;
+  }
+
+  /* Optional: video hover effect */
+  .video-col video:hover {
+    transform: scale(1.01);
+    box-shadow: 0px 4px 20px rgba(0,0,0,0.3);
+    transition: all 0.3s ease;
+  }
+
+  .video-col video {
+    pointer-events: none; /* disables play/pause/seek */
+  }
+
+
+
+  /*=====================GALLARY===================*/
+
+  .gallery-row {
+    height: 600px;          /* Fix gallery height */
+    overflow: hidden;       /* Hide extra content if any */
+  }
+  .gallery-row img {
+    height: 100%;           /* Force images to match column height */
+    object-fit: cover;      /* Crop images nicely instead of stretching */
+  }
+
+  .img-border {
+  border: 3px solid black;   /* Black border */
+  border-radius: 8px;        /* Rounded edges to match Bootstrap's "rounded" */
+}
+
+.img-border {
+  border: 3px solid black;
+  border-radius: 8px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+  cursor: pointer; /* Show pointer when hovering */
+}
+
+.img-border:hover {
+  transform: scale(1.05);            /* Slight zoom effect */
+  border-color: #007bff;             /* Change border to blue */
+  box-shadow: 0 8px 20px rgba(0,0,0,0.4); /* Add shadow */
+}
+
+
+/*=======================WHY US====================*/
+
+body, p, span{
+  font-family: 'Roboto', sans-serif;
+}
+h1,h2,h3,h4,h5,h6,a{
+  font-family: 'Rubik', sans-serif;
+}
+
+.finix-text h6{
+  color: #e73c3e;
+  font-weight: 400;
+  font-size: 17px;
+}
+.finix-text h2 {
+  font-weight: 400;
+  font-size: 35px;
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+.finix-text p {
+  color: #606060;
+  font-size: 15px;
+  line-height: 1.8rem;
+}
+.why-choose-us {
+  margin-top: 90px;
+}
+.why-choose-us .finix-text h2 {
+  font-weight: 500;
+}
+.why-choose-us .ct-btn {
+  display: inline-block;
+  width: 85px;
+  height: 85px;
+  line-height: 85px;
+  text-align: center;
+  border-radius: 50%;
+  font-size: 60px;
+  background: #fff;
+  position: absolute;
+  top: 77%;
+  right: 43%;
+}
+.why-choose-us .ct-btn::before {
+  content: "";
+  height: 85px;
+  width: 85px;
+  position: absolute;
+  top: 0;
+  left: 0;
+  background: #e73a3e;
+  border-radius: 50%;
+  animation: choose 1.6s ease-out infinite;
+}
+@keyframes choose{
+  0%,30%{
+      transform: scale(0);
+      opacity: 1;
+  }
+  50%{
+      transform: scale(1.5);
+      opacity: .7;
+  }
+  100%{
+      transform: scale(2);
+      opacity: 0;
+  }
+}
+.why-choose-us .ct-btn a{
+  color: #e73c3e;
+}
+.why-choose-us .feature-box {
+  background: #fff;
+  padding: 30px;
+  margin-bottom: 30px;
+  position: relative;
+  overflow: hidden;
+
+  transition: .4s;
+}
+.why-choose-us .feature-box:hover {
+  transform: translateY(-10px);
+}
+.why-choose-us .feature-box:hover .fbc-btn{
+  background: #e73c3e;
+  color: #fff;
+}
+.why-choose-us .feature-box::before {
+  content: "";
+  position: absolute;
+  top: -115px;
+  left: 0;
+  right: 0;
+  margin: auto;
+  width: 90%;
+  height: 70%;
+  background: #fdebeb;
+  border-radius: 50%;
+}
+.why-choose-us .fbc-btn {
+  display: inline-block;
+  height: 90px;
+  width: 90px;
+  line-height: 90px;
+  background: #fff;
+  border-radius: 50%;
+  text-align: center;
+  color: #e73a3e;
+  position: relative;
+  transition: .4s;
+}
+.active-feature{
+  margin-top: -30px;
+}
+.why-choose-us .finix-text{
+  position: relative;
+}
+
+
+
+/*================RATING ================*/
+
+
+
+.rating-container {
+            background: linear-gradient(145deg, #ffffff, #f0f0f0);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 10px 10px 20px #d1d1d1,-10px -10px 20px #ffffff;
+            max-width: 400px;
+            margin: 2rem auto;
+        }
+
+        .star-rating {
+            direction: rtl;
+            display: inline-block;
+            padding: 20px;
+        }
+
+        .star-rating input {
+            display: none;
+        }
+
+        .star-rating label {
+            color: #bbb;
+            cursor: pointer;
+            font-size: 30px;
+            padding: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .star-rating label:hover,
+        .star-rating label:hover ~ label,
+        .star-rating input:checked ~ label {
+            color: #f7b731;
+        }
+
+        .rating-title {
+            color: #2d3436;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+        }
+
+        .rating-feedback {
+            margin-top: 1.5rem;
+            color: #636e72;
+        }
+
+        .submit-rating {
+            background: linear-gradient(145deg, #f7b731, #f0932b);
+            border: none;
+            padding: 10px 25px;
+            border-radius: 25px;
+            color: white;
+            font-weight: 600;
+            margin-top: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .submit-rating:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(247, 183, 49, 0.4);
+        }
+
+        .rating-emoji {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+/*================================*/
+
+
+
+
+/*================================*/
+/*================================*/
+/*================================*/
+/*================================*/
+/*================================*/
+/*================================*/
